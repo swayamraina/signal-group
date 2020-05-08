@@ -7,6 +7,6 @@ public class Constants {
 
     public static final String EMPTY = "";
 
-    public static final List<String> EMPTY_LIST = new ArrayList<>(0);
+    public static final List<String> EMPTY_LIST = new ArrayList(0);
 
 }
