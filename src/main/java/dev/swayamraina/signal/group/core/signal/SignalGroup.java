@@ -15,4 +15,11 @@ public final class SignalGroup {
     private List<Signal> signals;
     public List<Signal> signals () { return signals; }
 
+
+
+    public SignalGroup (Meta meta, List<Signal> signals) {
+        this.meta = meta;
+        this.signals = signals;
+    }
+
 }

@@ -16,7 +16,7 @@ public final class Signal {
     private Meta meta;
     public Meta meta () { return meta; }
 
-    private List<Extractor> extractors;
-    public List<Extractor> extractors () { return extractors; }
+    private List<ExtractorKey> keys;
+    public List<ExtractorKey> keys () { return keys; }
 
 }
