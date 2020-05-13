@@ -1,6 +1,7 @@
-package dev.swayamraina.signal.group.entity;
+package dev.swayamraina.signal.group.core.signal;
 
 import dev.swayamraina.signal.group.annotations.Internal;
+import dev.swayamraina.signal.group.entity.Meta;
 
 import java.util.List;
 

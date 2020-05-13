@@ -1,4 +1,4 @@
-package dev.swayamraina.signal.group.entity;
+package dev.swayamraina.signal.group.core.http;
 
 import dev.swayamraina.signal.group.annotations.Internal;
 
