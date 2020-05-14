@@ -4,18 +4,19 @@ import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.internal.WhiteboxImpl;
 
 
-@RunWith(PowerMockRunner.class)
 public class KeyDataExtractorTest {
 
+    private KeyDataExtractor keyDataExtractor;
 
-    @InjectMocks private KeyDataExtractor keyDataExtractor;
+
+    @Before public void setup () {
+        keyDataExtractor = new KeyDataExtractor();
+    }
 
 
     @Test public void testContainsListOp () throws Exception {
@@ -95,11 +96,11 @@ public class KeyDataExtractorTest {
 
 
     @Test public void testExtract () {
-        String path;  JSONObject json;
+        String path, json;
         Object value;
 
         // TC 1 : null path
-        path = null;  json = new JSONObject();
+        path = null;  json = null;
         try {
             keyDataExtractor.extract(path, json);
             Assert.fail();
@@ -114,31 +115,31 @@ public class KeyDataExtractorTest {
 
         // TC 3 : simple path
         path = "data.profile.name";
-        json = new JSONObject("{\"data\": {\"profile\": {\"name\":\"swayam\", \"age\":26}}}");
+        json = "{\"data\": {\"profile\": {\"name\":\"swayam\", \"age\":26}}}";
         value = keyDataExtractor.extract(path, json);
         Assert.assertEquals("swayam", value);
 
         // TC 4 : array index path - start
         path = "data.profile[0].name";
-        json = new JSONObject("{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}");
+        json = "{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}";
         value = keyDataExtractor.extract(path, json);
         Assert.assertEquals("swayam", value);
 
         // TC 5 : array index path - end
         path = "data.profile[1].age";
-        json = new JSONObject("{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}");
+        json = "{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}";
         value = keyDataExtractor.extract(path, json);
         Assert.assertEquals(25, value);
 
         // TC 6 : array index path - not exists
         path = "data.profile[2].name";
-        json = new JSONObject("{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}");
+        json = "{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}";
         value = keyDataExtractor.extract(path, json);
         Assert.assertNull(value);
 
         // TC 7 : array path
         path = "data.profile";
-        json = new JSONObject("{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}");
+        json = "{\"data\": {\"profile\": [{\"name\":\"swayam\", \"age\":26}, {\"name\":\"ujjwal\", \"age\":25}]}}";
         value = keyDataExtractor.extract(path, json);
         Assert.assertTrue(value instanceof JSONArray);
         Assert.assertEquals(2, ((JSONArray) value).length());
