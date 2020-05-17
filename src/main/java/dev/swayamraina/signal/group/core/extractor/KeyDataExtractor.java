@@ -3,13 +3,24 @@ package dev.swayamraina.signal.group.core;
 import javafx.util.Pair;
 import org.json.JSONObject;
 
-public final class KeyDataExtractor {
+import static dev.swayamraina.signal.group.utils.Constants.EMPTY;
+
+public class KeyDataExtractor {
 
     private static final String JSON_PATH_SPLITTER = "\\.";
     private static final String ARRAY_START = "[";
     private static final String ARRAY_END = "]";
 
-    public Object extract (final String path, final JSONObject json) {
+
+    public Object extract (final String path, final String raw) {
+        if (null == path || null == raw || EMPTY.equals(raw))
+            throw new IllegalArgumentException();
+
+        return extract0(path, new JSONObject(raw));
+    }
+
+
+    private Object extract0 (final String path, final JSONObject json) {
         if (null == path || null == json)
             throw new IllegalArgumentException();
 
@@ -38,7 +49,7 @@ public final class KeyDataExtractor {
     }
 
 
-    private static Pair<String, Integer> getListOp (String path) {
+    private Pair<String, Integer> getListOp (String path) {
         if (null == path)
             throw new IllegalArgumentException();
 
