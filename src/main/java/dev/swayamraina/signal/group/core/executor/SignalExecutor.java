@@ -71,11 +71,16 @@ public final class SignalExecutor {
 
 
     private Map<Signal, Future<String>> check (final Map<Signal, Future<String>> results) {
-        Map<Signal, Future<String>> completed = new ConcurrentHashMap<>(); // todo: improve memory usage
+        boolean init = false;
+        Map<Signal, Future<String>> completed = null;
         Iterator<Map.Entry<Signal, Future<String>>> iterator = results.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Signal, Future<String>> entry = iterator.next();
             if (entry.getValue().isDone()) {
+                if (!init) {
+                    init = true;
+                    completed = new ConcurrentHashMap<>();
+                }
                 results.remove(entry.getKey());
                 completed.put(entry.getKey(), entry.getValue());
             }
