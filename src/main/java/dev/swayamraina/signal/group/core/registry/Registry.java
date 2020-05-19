@@ -1,18 +1,21 @@
 package dev.swayamraina.signal.group.core.registry;
 
-import dev.swayamraina.signal.group.core.errors.NoDataFound;
+import dev.swayamraina.signal.group.core.errors.NoDataFoundError;
 import dev.swayamraina.signal.group.core.signal.SignalGroup;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public final class Registry {
+
+
+public class Registry {
 
     private Map<String, SignalGroup> registry;
 
     public SignalGroup get (String uid) {
         if (null == uid || "".equals(uid)) throw new IllegalArgumentException("empty uid");
         SignalGroup sg = registry.get(uid);
-        if (null == sg) throw new NoDataFound(String.format("signal-group %s not registered", uid));
+        if (null == sg) throw new NoDataFoundError(String.format("signal-group %s not registered", uid));
         return sg;
     }
 
@@ -26,5 +29,10 @@ public final class Registry {
         if (null == uid || "".equals(uid)) throw new IllegalArgumentException("empty uid");
         return null != registry.get(uid);
     }
+
+
+
+
+    public Registry () { this.registry = new ConcurrentHashMap<>(); }
 
 }
