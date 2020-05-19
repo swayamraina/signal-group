@@ -22,18 +22,6 @@ public final class SignalExecutor {
     private ExecutorService tpe;
 
 
-    public SignalExecutor (
-            Registry registry,
-            Api api,
-            KeyDataExtractor extractor) {
-
-        this.registry = registry;
-        this.api = api;
-        this.extractor = extractor;
-        this.tpe = Executors.newWorkStealingPool();
-    }
-
-
     public ExecuteResponse execute (final ExecuteRequest request) {
         if (null == request) throw new IllegalArgumentException("null request received");
         SignalGroup sg = registry.get(request.uid());
@@ -104,6 +92,37 @@ public final class SignalExecutor {
                     extractor.extract(ek.path(), raw)
             );
         }
+    }
+
+
+
+
+
+
+
+
+
+    public SignalExecutor (
+            Registry registry,
+            Api api,
+            KeyDataExtractor extractor) {
+
+        this.registry = registry;
+        this.api = api;
+        this.extractor = extractor;
+        this.tpe = Executors.newWorkStealingPool();
+    }
+
+    public SignalExecutor (
+            Registry registry,
+            Api api,
+            KeyDataExtractor extractor,
+            ExecutorService tpe) {
+
+        this.registry = registry;
+        this.api = api;
+        this.extractor = extractor;
+        this.tpe = tpe;
     }
 
 }
