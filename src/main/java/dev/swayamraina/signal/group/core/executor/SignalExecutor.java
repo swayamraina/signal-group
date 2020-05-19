@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 
+
 public final class SignalExecutor {
 
     private Registry registry;
@@ -22,10 +23,22 @@ public final class SignalExecutor {
     private ExecutorService tpe;
 
 
-    public ExecuteResponse execute (final ExecuteRequest request) {
+    public ExecuteResponse execute (ExecuteRequest request) {
+        ExecuteResponse response = new ExecuteResponse();
+        return execute (request, response);
+    }
+
+
+    public ExecuteResponse execute (ExecuteRequest request, ExecuteResponse response) {
+        if (null == response) response = new ExecuteResponse();
+        response = execute0 (request, response);
+        return response;
+    }
+
+
+    private ExecuteResponse execute0 (final ExecuteRequest request, final ExecuteResponse response) {
         if (null == request) throw new IllegalArgumentException("null request received");
         SignalGroup sg = registry.get(request.uid());
-        ExecuteResponse response = new ExecuteResponse();
         if (null == sg.signals() || 0 == sg.signals().size()) return response;
         Map<Signal, Future<String>> results = new ConcurrentHashMap<>();
         Map<Signal, Future<String>> completed;
@@ -38,7 +51,7 @@ public final class SignalExecutor {
             if (null != completed && 0 != completed.size()) {
                 for (Map.Entry<Signal, Future<String>> c : completed.entrySet()) {
                     refreshResponse(c, response);
-                    results.putAll(execute0(c.getKey()));
+                    results.putAll(executeSignal(c.getKey()));
                 }
             }
         }
@@ -46,7 +59,7 @@ public final class SignalExecutor {
     }
 
 
-    private Map<Signal, Future<String>> execute0 (final Signal sg) {
+    private Map<Signal, Future<String>> executeSignal (final Signal sg) {
         Map<Signal, Future<String>> results = new ConcurrentHashMap<>();
         Iterator<Signal> iterator = sg.children().iterator();
         while (iterator.hasNext()) {
@@ -93,9 +106,6 @@ public final class SignalExecutor {
             );
         }
     }
-
-
-
 
 
 
