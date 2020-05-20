@@ -58,11 +58,11 @@ public class SignalExecutorIntegrationTest {
         Set<String> consumed = new HashSet<>();
         short found = 0;
         do {
-            if (null != response.raw("service-a") && !consumed.contains("service-a")) {
+            if (response.available("service-a") && !consumed.contains("service-a")) {
                 found++;
                 consumed.add("service-a");
                 Assert.assertEquals("swayam", response.get("service-a", "data.profile.name"));
-            } else if (null != response.raw("service-b") && !consumed.contains("service-b")) {
+            } else if (response.available("service-b") && !consumed.contains("service-b")) {
                 found++;
                 consumed.add("service-b");
                 Assert.assertEquals("swayam", response.get("service-b", "data.profile.name"));
@@ -97,11 +97,11 @@ public class SignalExecutorIntegrationTest {
         Set<String> consumed = new HashSet<>();
         short found = 0;
         do {
-            if (null != response.raw("service-a") && !consumed.contains("service-a")) {
+            if (response.available("service-a") && !consumed.contains("service-a")) {
                 found++;
                 consumed.add("service-a");
                 Assert.assertEquals("swayam", response.get("service-a", "data.profile.name"));
-            } else if (null != response.raw("service-b") && !consumed.contains("service-b")) {
+            } else if (response.available("service-b") && !consumed.contains("service-b")) {
                 found++;
                 consumed.add("service-b");
                 Assert.assertEquals("swayam", response.get("service-b", "data.profile.name"));
