@@ -1,10 +1,19 @@
 package dev.swayamraina.signal.group.core.signal;
 
+import dev.swayamraina.signal.group.annotations.Internal;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class SignalResponse {
+
+    /**
+     * This internal field when set to true indicates the response has been
+     **/
+    @Internal private volatile boolean completed;
+    public boolean completed () { return completed; }
+    public void markCompleted () { completed = true; }
 
     private String raw;
     public String raw () { return raw; }
