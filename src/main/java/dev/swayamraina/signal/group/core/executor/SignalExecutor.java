@@ -30,13 +30,13 @@ public final class SignalExecutor {
 
 
     public ExecuteResponse execute (ExecuteRequest request, ExecuteResponse response) {
-        if (null == response) response = new ExecuteResponse();
+        if (null == response) throw new IllegalStateException ("response cannot be null");
         response = execute0 (request, response);
         return response;
     }
 
 
-    private ExecuteResponse execute0 (final ExecuteRequest request, final ExecuteResponse response) {
+    private ExecuteResponse execute0 (ExecuteRequest request, ExecuteResponse response) {
         if (null == request) throw new IllegalArgumentException("null request received");
         SignalGroup sg = registry.get(request.uid());
         if (null == sg.signals() || 0 == sg.signals().size()) return response;
@@ -105,6 +105,7 @@ public final class SignalExecutor {
                     extractor.extract(ek.path(), raw)
             );
         }
+        response.markAvailable(completed.getKey().name());
     }
 
 

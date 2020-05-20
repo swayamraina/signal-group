@@ -15,7 +15,7 @@ public class ExecuteResponse {
 
     public String raw (String key) {
         SignalResponse sr = data.get(key);
-        return (null == sr || !sr.completed()) ? null : sr.raw();
+        return (null == sr || !sr.available()) ? null : sr.raw();
     }
 
 
@@ -38,9 +38,15 @@ public class ExecuteResponse {
     }
 
 
-    public void markCompleted (String key) {
+    public void markAvailable (String key) {
         SignalResponse sr = data.get(key);
-        sr.markCompleted();
+        sr.markAvailable();
+    }
+
+
+    public boolean available (String key) {
+        SignalResponse sr = data.get(key);
+        return (null == sr) ? false : sr.available();
     }
 
 

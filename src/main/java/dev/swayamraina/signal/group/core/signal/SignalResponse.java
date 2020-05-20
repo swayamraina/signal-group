@@ -11,9 +11,9 @@ public class SignalResponse {
     /**
      * This internal field when set to true indicates the response has been
      **/
-    @Internal private volatile boolean completed;
-    public boolean completed () { return completed; }
-    public void markCompleted () { completed = true; }
+    @Internal private volatile boolean available;
+    public boolean available () { return available; }
+    public void markAvailable () { available = true; }
 
     private String raw;
     public String raw () { return raw; }
