@@ -12,6 +12,9 @@ public final class SignalGroup {
     @Internal private String uid;
     public String uid () { return uid; }
 
+    @Internal private long timeout;
+    public long timeout () { return timeout; }
+
     private List<Signal> signals;
     public List<Signal> signals () { return signals; }
 
@@ -23,8 +26,12 @@ public final class SignalGroup {
 
 
 
-    public SignalGroup (List<Signal> signals) {
+    public SignalGroup (List<Signal> signals, long timeout) {
+        if (0 > timeout)
+            throw new IllegalArgumentException ("timeout cannot be < 0");
+
         this.signals = signals;
+        this.timeout = timeout;
         this.withDescription(EMPTY);
     }
 
