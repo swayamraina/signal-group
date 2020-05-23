@@ -1,4 +1,4 @@
-package dev.swayamraina.signal.group.core;
+package dev.swayamraina.signal.group.core.extractor;
 
 import javafx.util.Pair;
 import org.json.JSONObject;
