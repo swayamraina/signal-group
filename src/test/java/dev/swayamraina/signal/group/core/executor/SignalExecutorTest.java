@@ -1,14 +1,15 @@
 package dev.swayamraina.signal.group.core.executor;
 
-import dev.swayamraina.signal.group.core.KeyDataExtractor;
+import dev.swayamraina.signal.group.core.extractor.KeyDataExtractor;
 import dev.swayamraina.signal.group.core.errors.NoDataFoundError;
 import dev.swayamraina.signal.group.core.errors.SignalExecutionError;
 import dev.swayamraina.signal.group.core.http.Api;
 import dev.swayamraina.signal.group.core.http.Http;
+import dev.swayamraina.signal.group.core.http.response.Response;
 import dev.swayamraina.signal.group.core.registry.Registry;
 import dev.swayamraina.signal.group.core.signal.Signal;
 import dev.swayamraina.signal.group.core.signal.SignalGroup;
-import dev.swayamraina.signal.group.entity.ExtractorKey;
+import dev.swayamraina.signal.group.core.extractor.ExtractorKey;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Arrays;
+
 
 
 public class SignalExecutorTest {
@@ -36,7 +38,7 @@ public class SignalExecutorTest {
 
     @Test public void testExecute () {
         ExecuteRequest request; ExecuteResponse response;
-        Signal s1, s2;  SignalGroup sg;  Http http;
+        Signal s1, s2;  SignalGroup sg;  Http http;  long timeout=0;
 
         // TC 1 : null request
         request = null;
@@ -70,7 +72,7 @@ public class SignalExecutorTest {
 
         // TC 5 : signal group with null signals
         request = new ExecuteRequest("exists");
-        sg = new SignalGroup(null);
+        sg = new SignalGroup(null, timeout);
         registry.add("exists", sg);
         response = signalExecutor.execute(request);
         Assert.assertNotNull(response);
@@ -80,9 +82,9 @@ public class SignalExecutorTest {
         request = new ExecuteRequest("exists");
         http = null;
         s1 = new Signal("service-a", 1, http, Arrays.asList(), Arrays.asList());
-        sg = new SignalGroup(Arrays.asList(s1));
+        sg = new SignalGroup(Arrays.asList(s1), timeout);
         registry.add("exists", sg);
-        Mockito.when(api.call(http)).thenReturn("{}");
+        Mockito.when(api.call(http)).thenReturn(new Response(200, "{}"));
         response = signalExecutor.execute(request);
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.raw("service-a"));
@@ -91,9 +93,9 @@ public class SignalExecutorTest {
         request = new ExecuteRequest("exists");
         http = null;
         s1 = new Signal("service-a", 1, http, Arrays.asList(), Arrays.asList(new ExtractorKey("data.profile.name")));
-        sg = new SignalGroup(Arrays.asList(s1));
+        sg = new SignalGroup(Arrays.asList(s1), timeout);
         registry.add("exists", sg);
-        Mockito.when(api.call(http)).thenReturn("{\"data\": {\"profile\": {\"name\": \"swayam\"}}}");
+        Mockito.when(api.call(http)).thenReturn(new Response(200, "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}"));
         response = signalExecutor.execute(request);
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.raw("service-a"));
@@ -105,11 +107,11 @@ public class SignalExecutorTest {
         http = null;
         s2 = new Signal("service-a-a", 1, http, Arrays.asList(), Arrays.asList(new ExtractorKey("data.orders[1].amount")));
         s1 = new Signal("service-a", 1, http, Arrays.asList(s2), Arrays.asList(new ExtractorKey("data.profile.name")));
-        sg = new SignalGroup(Arrays.asList(s1));
+        sg = new SignalGroup(Arrays.asList(s1), timeout);
         registry.add("exists", sg);
         Mockito.when(api.call(http)).thenReturn (
-                "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}",
-                "{\"data\": {\"orders\": [{\"amount\": 23}, {\"amount\": 46}]}}"
+                new Response(200, "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}"),
+                new Response(200, "{\"data\": {\"orders\": [{\"amount\": 23}, {\"amount\": 46}]}}")
         );
         response = signalExecutor.execute(request);
         Assert.assertNotNull(response);
@@ -125,7 +127,7 @@ public class SignalExecutorTest {
         request = new ExecuteRequest("exists");
         http = null;
         s1 = new Signal("service-a", 1, http, Arrays.asList(), Arrays.asList());
-        sg = new SignalGroup(Arrays.asList(s1));
+        sg = new SignalGroup(Arrays.asList(s1), timeout);
         registry.add("exists", sg);
         Mockito.when(api.call(http)).thenThrow(IOException.class);
         try {

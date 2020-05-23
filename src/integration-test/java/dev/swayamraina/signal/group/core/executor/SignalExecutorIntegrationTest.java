@@ -4,6 +4,7 @@ import dev.swayamraina.signal.group.core.extractor.ExtractorKey;
 import dev.swayamraina.signal.group.core.extractor.KeyDataExtractor;
 import dev.swayamraina.signal.group.core.http.Api;
 import dev.swayamraina.signal.group.core.http.Http;
+import dev.swayamraina.signal.group.core.http.response.Response;
 import dev.swayamraina.signal.group.core.registry.Registry;
 import dev.swayamraina.signal.group.core.signal.Signal;
 import dev.swayamraina.signal.group.core.signal.SignalGroup;
@@ -50,7 +51,7 @@ public class SignalExecutorIntegrationTest {
         registry.add("exists", sg);
         Mockito.when(api.call(http)).thenAnswer(invocation -> {
             Thread.sleep(100);
-            return "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}";
+            return new Response(200, "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}");
         });
 
         Future<ExecuteResponse> future = e.submit(() -> signalExecutor.execute(request, response));
@@ -88,8 +89,8 @@ public class SignalExecutorIntegrationTest {
         sg = new SignalGroup(Arrays.asList(s1), timeout);
         registry.add("exists", sg);
         Mockito.when(api.call(http)).thenAnswer(invocation -> {
-            Thread.sleep(110);
-            return "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}";
+            Thread.sleep(100);
+            return new Response(200, "{\"data\": {\"profile\": {\"name\": \"swayam\"}}}");
         });
 
         Future<ExecuteResponse> future = e.submit(() -> signalExecutor.execute(request, response));

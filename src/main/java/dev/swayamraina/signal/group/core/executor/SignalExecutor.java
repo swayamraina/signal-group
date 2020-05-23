@@ -3,6 +3,7 @@ package dev.swayamraina.signal.group.core.executor;
 import dev.swayamraina.signal.group.core.extractor.KeyDataExtractor;
 import dev.swayamraina.signal.group.core.errors.SignalExecutionError;
 import dev.swayamraina.signal.group.core.http.Api;
+import dev.swayamraina.signal.group.core.http.response.Response;
 import dev.swayamraina.signal.group.core.registry.Registry;
 import dev.swayamraina.signal.group.core.signal.Signal;
 import dev.swayamraina.signal.group.core.signal.SignalGroup;
@@ -40,16 +41,16 @@ public final class SignalExecutor {
         if (null == request) throw new IllegalArgumentException("null request received");
         SignalGroup sg = registry.get(request.uid());
         if (null == sg.signals() || 0 == sg.signals().size()) return response;
-        Map<Signal, Future<String>> results = new ConcurrentHashMap<>();
-        Map<Signal, Future<String>> completed;
+        Map<Signal, Future<Response>> results = new ConcurrentHashMap<>();
+        Map<Signal, Future<Response>> completed;
         for (Signal s : sg.signals()) {
-            Future<String> f = tpe.submit(() -> api.call(s.http()));
+            Future<Response> f = tpe.submit(() -> api.call(s.http()));
             results.put(s, f);
         }
         while (!results.isEmpty()) {
-            completed = check(results);
+            completed = check (results);
             if (null != completed && 0 != completed.size()) {
-                for (Map.Entry<Signal, Future<String>> c : completed.entrySet()) {
+                for (Map.Entry<Signal, Future<Response>> c : completed.entrySet()) {
                     refreshResponse(c, response);
                     results.putAll(executeSignal(c.getKey()));
                 }
@@ -59,24 +60,24 @@ public final class SignalExecutor {
     }
 
 
-    private Map<Signal, Future<String>> executeSignal (final Signal sg) {
-        Map<Signal, Future<String>> results = new ConcurrentHashMap<>();
+    private Map<Signal, Future<Response>> executeSignal (final Signal sg) {
+        Map<Signal, Future<Response>> results = new ConcurrentHashMap<>();
         Iterator<Signal> iterator = sg.children().iterator();
         while (iterator.hasNext()) {
             Signal s = iterator.next();
-            Future<String> f = tpe.submit(() -> api.call(s.http()));
+            Future<Response> f = tpe.submit(() -> api.call(s.http()));
             results.put(s, f);
         }
         return results;
     }
 
 
-    private Map<Signal, Future<String>> check (final Map<Signal, Future<String>> results) {
+    private Map<Signal, Future<Response>> check (final Map<Signal, Future<Response>> results) {
         boolean init = false;
-        Map<Signal, Future<String>> completed = null;
-        Iterator<Map.Entry<Signal, Future<String>>> iterator = results.entrySet().iterator();
+        Map<Signal, Future<Response>> completed = null;
+        Iterator<Map.Entry<Signal, Future<Response>>> iterator = results.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<Signal, Future<String>> entry = iterator.next();
+            Map.Entry<Signal, Future<Response>> entry = iterator.next();
             if (entry.getValue().isDone()) {
                 if (!init) {
                     init = true;
@@ -90,10 +91,10 @@ public final class SignalExecutor {
     }
 
 
-    private void refreshResponse (Map.Entry<Signal, Future<String>> completed, ExecuteResponse response) {
+    private void refreshResponse (Map.Entry<Signal, Future<Response>> completed, ExecuteResponse response) {
         String raw;
         try {
-            raw = completed.getValue().get();
+            raw = completed.getValue().get().content();
         } catch (InterruptedException | ExecutionException e) {
             throw new SignalExecutionError(e.getMessage(), e);
         }

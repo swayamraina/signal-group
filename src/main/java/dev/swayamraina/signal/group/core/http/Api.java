@@ -1,6 +1,8 @@
 package dev.swayamraina.signal.group.core.http;
 
 import dev.swayamraina.signal.group.core.errors.SignalExecutionError;
+import dev.swayamraina.signal.group.core.http.response.Response;
+
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.HttpClientUtils;
@@ -11,6 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.*;
 
 
+
 public class Api {
 
     private static final String GET   =  "GET";
@@ -19,7 +22,7 @@ public class Api {
     private static final String PATCH =  "PATCH";
 
 
-    public String call (Http http) {
+    public Response call (Http http) {
         HttpRequestBase request = null;
         String url = http.host() + http.endpoint();
 
@@ -51,14 +54,15 @@ public class Api {
     }
 
 
-    private String response (HttpRequestBase request) {
-        String response;
+    private Response response (HttpRequestBase request) {
+        String content="{}";  int code=500;
         CloseableHttpClient client = HttpClients.createDefault();
         try (CloseableHttpResponse httpResponse = client.execute(request)) {
-            response = extract (httpResponse.getEntity().getContent());
+            content = extract (httpResponse.getEntity().getContent());
+            code = httpResponse.getStatusLine().getStatusCode();
         } catch (IOException e) { throw new SignalExecutionError(e); }
         finally { HttpClientUtils.closeQuietly(client); }
-        return response;
+        return new Response (code, content);
     }
 
 
