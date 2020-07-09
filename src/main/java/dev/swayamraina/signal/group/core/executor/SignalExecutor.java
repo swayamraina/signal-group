@@ -52,7 +52,7 @@ public final class SignalExecutor {
             if (null != completed && 0 != completed.size()) {
                 for (Map.Entry<Signal, Future<Response>> c : completed.entrySet()) {
                     refreshResponse(c, response);
-                    results.putAll(executeSignal(c.getKey()));
+                    results.putAll(executeSignal(c.getKey(), response));
                 }
             }
         }
@@ -60,13 +60,15 @@ public final class SignalExecutor {
     }
 
 
-    private Map<Signal, Future<Response>> executeSignal (final Signal sg) {
+    private Map<Signal, Future<Response>> executeSignal (final Signal sg, final ExecuteResponse response) {
         Map<Signal, Future<Response>> results = new ConcurrentHashMap<>();
         Iterator<Signal> iterator = sg.children().iterator();
         while (iterator.hasNext()) {
             Signal s = iterator.next();
-            Future<Response> f = tpe.submit(() -> api.call(s.http()));
-            results.put(s, f);
+            if (!response.available(sg.name())) {
+                Future<Response> f = tpe.submit(() -> api.call(s.http()));
+                results.put(s, f);
+            }
         }
         return results;
     }
