@@ -3,12 +3,11 @@ package dev.swayamraina.signal.group.core.http;
 import dev.swayamraina.signal.group.annotations.Internal;
 import org.apache.http.client.config.RequestConfig;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
 import static dev.swayamraina.signal.group.utils.Constants.EMPTY;
-import static dev.swayamraina.signal.group.utils.Constants.EMPTY_LIST;
 
 public final class Http {
 
@@ -31,13 +30,13 @@ public final class Http {
     public Map<String, String> headers () { return headers; }
     public Http withHeaders (Map<String, String> headers) { this.headers = headers; return this; }
 
-    private Optional<List<String>> variables;
-    public List<String> variables () { return variables.isPresent() ? variables.get() : EMPTY_LIST; }
-    public Http withVariables (List<String> variables) { this.variables = Optional.ofNullable(variables); return this; }
+    private Optional<Map<String, String>> variables;
+    public Map<String, String> variables () { return variables.isPresent() ? variables.get() : Collections.emptyMap(); }
+    public Http withVariables (Map<String, String> variables) { this.variables = Optional.ofNullable(variables); return this; }
 
-    private Optional<List<String>> parameters;
-    public List<String> parameters () { return parameters.isPresent() ? parameters.get() : EMPTY_LIST; }
-    public Http withParameters (List<String> parameters) { this.parameters = Optional.ofNullable(parameters); return this; }
+    private Optional<Map<String, String>> parameters;
+    public Map<String, String> parameters () { return parameters.isPresent() ? parameters.get() : Collections.emptyMap(); }
+    public Http withParameters (Map<String, String> parameters) { this.parameters = Optional.ofNullable(parameters); return this; }
 
     private Optional<String> body;
     public String body () { return body.isPresent() ? body.get() : EMPTY; }
